@@ -1,21 +1,26 @@
+const _ = require('lodash');
 const expect = require('expect');
 const request  = require('supertest');
-const {ObjectID} = require('mongodb');
+const {MongoClient, ObjectID} = require('mongodb');
 var {app} = require('./../server.js');
 var {todo} = require('./../models/todo.js');
 var {user} = require('./../models/user.js');
 
 const todos = [{
   _id: new ObjectID(),
-  text: 'hakuna matata'
+  text: 'hakuna matata',
+  completed: false
 },
 {
   _id: new ObjectID(),
-  text: 'hakuna matatas'
+  text: 'hakuna matatas',
+  completed: true,
+  completedAt: 1533529211503
 },
 {
   _id: new ObjectID(),
-  text: 'hakuna, ma tatas'
+  text: 'hakuna, ma tatas',
+  completed: false
 }];
 
 beforeEach((done)=>{
@@ -145,3 +150,50 @@ it('should return 404 for invalid object ids', (done)=>{
     .end(done);
 });
 });
+
+describe('PATCH, /todos:id', ()=>{
+  it ('should update a todo', (done)=>{
+    let text = "_.pick(body,['text','completed'])";
+    let hexId = todos[0]._id.toHexString()
+
+    request(app)
+      .patch(`/todos/${hexId}`)
+      .send({completed: true,text})
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.todo.text).toBe(text);
+        expect(res.body.todo.completed).toBe(true);
+        expect(res.body.todo.completedAt).toBeA('number');
+      })
+      .end(done);
+    });
+
+  it('should clear completedAt when a todo is marked a not completed', (done)=>{
+    let text = "resetting complete to false";
+    let hexId = todos[0]._id.toHexString()
+
+    request(app)
+      .patch(`/todos/${hexId}`)
+      .send({completed: false,text})
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.todo.text).toBe(text);
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toBeNull;
+      })
+      .end(done);
+  })
+
+  it('should not update todo when passed bad data',(done)=>{
+    let text = {};
+    let hexId = todos[1]._id.toHexString()
+    request(app)
+      .patch(`/todos/${hexId}`)
+      .send({text})
+      .expect(400)
+      .end(done);
+        
+      })
+      // done();
+    });
+  // });
