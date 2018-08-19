@@ -7,7 +7,7 @@ const {mongoose} = require ('./db/mongoose.js');
 const validator = require('validator');
 let {Todo} = require ('./models/todo.js');
 let {User} = require ('./models/user.js');
-
+let {authenticate} = require('./middleware/authenticate.js');
 
 var app = express();
 const port = process.env.PORT;
@@ -99,7 +99,7 @@ app.post('/users', (req,res) => {
   var user = new User(body);
   
   user.save().then(() =>{
-    return user.generateAuthToken();
+    return user.generateAuthToken(); //custom instance method
     }).then((token) =>{
       res.header('x-auth',token).send(user);
     }).catch((err) => {
@@ -107,6 +107,10 @@ app.post('/users', (req,res) => {
     });
 });
 
+app.get('/users/me',authenticate,(req,res) =>{
+  var token = req.header('x-auth');
+  res.send(req.user);
+});
 
 app.listen(port,()=> {
   console.log(`Server started. Listening on port ${port}.`);
