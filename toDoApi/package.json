@@ -14,8 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^6.5.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
-    
     "express": "^4.16.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",
