@@ -3,8 +3,8 @@ const expect = require('expect');
 const request  = require('supertest');
 const {MongoClient, ObjectID} = require('mongodb');
 var {app} = require('./../server.js');
-var {todo} = require('./../models/todo.js');
-var {user} = require('./../models/user.js');
+var {Todo} = require('./../models/todo.js');
+var {User} = require('./../models/user.js');
 
 const todos = [{
   _id: new ObjectID(),
@@ -24,8 +24,8 @@ const todos = [{
 }];
 
 beforeEach((done)=>{
-  todo.remove({}).then(()=> {
-    return todo.insertMany(todos);
+  Todo.remove({}).then(()=> {
+    return Todo.insertMany(todos);
   }).then(()=>done());
 });
 
@@ -44,7 +44,7 @@ describe('POST, /todos', ()=>{
         if(err){
           return done(err);
         }
-        todo.find({text}).then((todos)=>{
+        Todo.find({text}).then((todos)=>{
           expect(todos.length).toBe(1);
          expect(todos[0].text).toBe(text);
       //    expect(todos[(todos.length -1)].text).toBe('Created a new todo');
@@ -66,7 +66,7 @@ describe('POST, /todos', ()=>{
         if(err){
           return done(err);
         }
-        todo.find().then((todos)=>{
+        Todo.find().then((todos)=>{
           expect(todos.length).toBe(3);
         // Use Chai ==>  expect(todos[0]).text.to.not.exist;
           done();
