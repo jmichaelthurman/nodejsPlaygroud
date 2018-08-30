@@ -4,8 +4,10 @@ const request  = require('supertest');
 const {MongoClient, ObjectID} = require('mongodb');
 var {app} = require('./../server.js');
 var {Todo} = require('./../models/todo.js');
-var {User} = require('./../models/user.js');
-const {todos, populateTodos} = require('./seed/seed');
+// var {User} = require('./../models/user.js');
+const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
+
+
 
 
 beforeEach(populateTodos);
@@ -32,7 +34,7 @@ describe('POST, /todos', ()=>{
           done();
         })
         .catch((err)=> done(err));
-      })
+      });
     });
 
 
@@ -49,7 +51,6 @@ describe('POST, /todos', ()=>{
         }
         Todo.find().then((todos)=>{
           expect(todos.length).toBe(3);
-        // Use Chai ==>  expect(todos[0]).text.to.not.exist;
           done();
         })
         .catch((err)=> done(err));
@@ -178,3 +179,4 @@ describe('PATCH, /todos:id', ()=>{
       // done();
     });
   // });
+  beforeEach(populateUsers);
